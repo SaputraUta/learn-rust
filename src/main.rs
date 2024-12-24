@@ -1,36 +1,16 @@
-use std::fmt::Display;
+use std::fmt::{Display, Debug};
 
-pub trait Summary {
-    fn summarize(&self) -> String;
-}
-
-pub struct NewsArticle {
-    pub headline: String,
-    pub content: String,
-}
-
-impl Summary for NewsArticle {
-    fn summarize(&self) -> String {
-        format!("{} - {}", self.headline, self.content)
-    }
-}
-
-impl Display for NewsArticle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} - {}", self.headline, self.content)
-    }
-}
-
-pub fn notify<T: Summary + Display> (item: &T) {
-    println!("Breaking news! {}", item.summarize());
-    println!("Breaking news! {}", item);
+pub fn notify<T, U>(item1: &T, item2: &U)
+where 
+    T: Display + Debug,
+    U: Debug,
+{
+    println!("Item 1: {}", item1);
+    println!("Item 2: {:?}", item2);
 }
 
 fn main() {
-    let article = NewsArticle {
-        headline: String::from("Rust 1.72 is released!"),
-        content: String::from("The rust programming language has a new version!"),
-    };
-
-    notify(&article);
+    let x = "Rust 1.72 Released!";
+    let y = vec![1, 2, 3];
+    notify(&x, &y);
 }
