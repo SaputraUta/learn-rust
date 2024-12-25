@@ -1,16 +1,38 @@
-use std::fmt::{Display, Debug};
+use std::fmt::{Display, Formatter, Result};
 
-pub fn notify<T, U>(item1: &T, item2: &U)
-where 
-    T: Display + Debug,
-    U: Debug,
-{
-    println!("Item 1: {}", item1);
-    println!("Item 2: {:?}", item2);
+struct Pair<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl<T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
+
+impl Display for Pair<i32> {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "Pair({}, {})", self.x, self.y)
+    }
 }
 
 fn main() {
-    let x = "Rust 1.72 Released!";
-    let y = vec![1, 2, 3];
-    notify(&x, &y);
+    let p1 = Pair::new(10, 20);
+    let p2 = Pair::new(30, 15);
+
+    p1.cmp_display();
+    p2.cmp_display();
+
+    println!("{}", p1);
 }
