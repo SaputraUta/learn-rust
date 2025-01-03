@@ -1,25 +1,31 @@
-use std::fmt::Display;
+use std::ops::Deref;
+struct MyBox<T>(T);
 
-fn longest_with_an_announcement<'a, T>(
-    x: &'a str,
-    y: &'a str,
-    ann: T,
-) -> &'a str
-where T: Display,
-{
-    println!("Announcement! {}", ann);
-    if x.len() > y.len() {
-        x
-    } else {
-        y
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
     }
 }
 
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+fn hello(name: &str) {
+    println!("Hello, {name}!")
+}
+
 fn main() {
-    let string1 = String::from("long string is long");
-    let string2 = String::from("Goodbye");
+    let x = 5;
+    let y = MyBox::new(x);
 
-    let result = longest_with_an_announcement(&string1, &string2,  "Comparing two strings!");
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
 
-    println!("The longest string is {}", result);
+    let m = MyBox::new(String::from("Rust"));
+    hello(&m);
 }
