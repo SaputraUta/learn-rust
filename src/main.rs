@@ -1,25 +1,29 @@
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 use std::cell::RefCell;
 
 #[derive(Debug)]
 struct Node {
     value: i32,
-    next: RefCell<Option<Rc<Node>>>,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
 }
 
 fn main() {
-    let node1 = Rc::new(Node {
-        value: 1,
-        next: RefCell::new(None),
+    let leaf = Rc::new(Node{
+        value:3,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
     });
 
-    let node2 = Rc::new(Node {
-        value: 2,
-        next: RefCell::new(Some(Rc::clone(&node1))),
+    let branch = Rc::new(Node{
+        value:5,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
     });
 
-    *node1.next.borrow_mut() = Some(Rc::clone(&node2));
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
 
-    println!("node1 count: {}", Rc::strong_count(&node1));
-    println!("node2 count: {}", Rc::strong_count(&node2));
+    println!("Leaf parent = {:?}", leaf.parent.borrow().upgrade());
+
+    println!("Branch children = {:?}", branch.children.borrow());
 }
