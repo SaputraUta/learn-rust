@@ -17,13 +17,13 @@ impl Draw for Square {
     }
 }
 
-fn draw_dynamic(shape: &dyn Draw) {
-    shape.draw();
-}
-
 fn main() {
-    let circle = Circle;
-    let square = Square;
-    draw_dynamic(&circle);
-    draw_dynamic(&square);
+    let shapes: Vec<Box<dyn Draw>> = vec![
+        Box::new(Circle),
+        Box::new(Square),
+    ];
+
+    for shape in shapes {
+        shape.draw();
+    }
 }
