@@ -1,23 +1,29 @@
-use std::sync::{Arc, Mutex};
-use std::thread;
+trait Draw {
+    fn draw(&self);
+}
+
+struct Circle;
+struct Square;
+
+impl Draw for Circle {
+    fn draw(&self) {
+        println!("Drawing a circle");
+    }
+}
+
+impl Draw for Square {
+    fn draw(&self) {
+        println!("Drawing a square");
+    }
+}
+
+fn draw_static<T: Draw>(shape: &T) {
+    shape.draw();
+}
 
 fn main() {
-    let counter = Arc::new(Mutex::new(0));
-    let mut handles = vec![];
-
-    for _ in 0..10 {
-        let counter = Arc::clone(&counter);
-        let handle = thread::spawn(move || {
-            let mut num = counter.lock().unwrap();
-            *num += 1;
-        });
-
-        handles.push(handle);
-    }
-
-    for handle in handles {
-        handle.join().unwrap();
-    }
-
-    println!("Result: {}", *counter.lock().unwrap());
+    let circle = Circle;
+    let square = Square;
+    draw_static(&circle);
+    draw_static(&square);
 }
