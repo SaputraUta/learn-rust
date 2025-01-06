@@ -17,13 +17,13 @@ impl Draw for Square {
     }
 }
 
-fn draw_static<T: Draw>(shape: &T) {
+fn draw_dynamic(shape: &dyn Draw) {
     shape.draw();
 }
 
 fn main() {
     let circle = Circle;
     let square = Square;
-    draw_static(&circle);
-    draw_static(&square);
+    draw_dynamic(&circle);
+    draw_dynamic(&square);
 }
