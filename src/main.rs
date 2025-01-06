@@ -1,29 +1,23 @@
-use std::rc::{Rc, Weak};
-use std::cell::RefCell;
-
-#[derive(Debug)]
-struct Node {
-    value: i32,
-    parent: RefCell<Weak<Node>>,
-    children: RefCell<Vec<Rc<Node>>>,
-}
+use std::sync::{Arc, Mutex};
+use std::thread;
 
 fn main() {
-    let leaf = Rc::new(Node{
-        value:3,
-        parent: RefCell::new(Weak::new()),
-        children: RefCell::new(vec![]),
-    });
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
 
-    let branch = Rc::new(Node{
-        value:5,
-        parent: RefCell::new(Weak::new()),
-        children: RefCell::new(vec![Rc::clone(&leaf)]),
-    });
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
 
-    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+        handles.push(handle);
+    }
 
-    println!("Leaf parent = {:?}", leaf.parent.borrow().upgrade());
+    for handle in handles {
+        handle.join().unwrap();
+    }
 
-    println!("Branch children = {:?}", branch.children.borrow());
+    println!("Result: {}", *counter.lock().unwrap());
 }
