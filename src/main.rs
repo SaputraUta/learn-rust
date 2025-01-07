@@ -1,29 +1,15 @@
-trait Draw {
-    fn draw(&self);
-}
-
-struct Circle;
-struct Square;
-
-impl Draw for Circle {
-    fn draw(&self) {
-        println!("Drawing a circle");
-    }
-}
-
-impl Draw for Square {
-    fn draw(&self) {
-        println!("Drawing a square");
-    }
-}
+mod blog;
+use blog::Post;
 
 fn main() {
-    let shapes: Vec<Box<dyn Draw>> = vec![
-        Box::new(Circle),
-        Box::new(Square),
-    ];
+    let mut post = Post::new();
 
-    for shape in shapes {
-        shape.draw();
-    }
+    post.add_text("I ate a salad for lunch today");
+    assert_eq!("", post.content());
+
+    post.request_review();
+    assert_eq!("", post.content());
+
+    post.approve();
+    assert_eq!("I ate a salad for lunch today", post.content());
 }
